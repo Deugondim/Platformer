@@ -6,6 +6,7 @@ from support import import_folder
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos, surface, create_jump_particles):
         super().__init__()
+        # sets up player
         self.import_character_assets()
         self.frame_index = 0
         self.animation_speed = 0.15
@@ -34,14 +35,17 @@ class Player(pygame.sprite.Sprite):
         self.on_right = False
 
     def import_character_assets(self):
+        # gets player sprite
         character_path = 'graphics/character/'
         self.animations = {'idle': [], 'run': [], 'jump': [], 'fall': []}
 
         for animation in self.animations.keys():
             full_path = character_path + animation
+            # sets sprite animations
             self.animations[animation] = import_folder(full_path)
 
     def import_dust_run_particles(self):
+        # gets dust
         self.dust_run_particles = import_folder(
             'graphics/character/dust_particles/run')
 
@@ -60,7 +64,7 @@ class Player(pygame.sprite.Sprite):
             flipped_image = pygame.transform.flip(image, True, False)
             self.image = flipped_image
 
-        # set the rect
+        # set the rect to collide
         if self.on_ground and self.on_right:
             self.rect = self.image.get_rect(bottomright=self.rect.bottomright)
         elif self.on_ground and self.on_left:
@@ -75,6 +79,7 @@ class Player(pygame.sprite.Sprite):
             self.rect = self.image.get_rect(midtop=self.rect.midtop)
 
     def run_dust_animation(self):
+        # dust animation
         if self.status == 'run' and self.on_ground:
             self.dust_frame_index += self.dust_animation_speed
             if self.dust_frame_index >= len(self.dust_run_particles):
@@ -92,6 +97,7 @@ class Player(pygame.sprite.Sprite):
                 self.display_surface.blit(flipped_dust_particle, pos)
 
     def get_input(self):
+        # allows player to control movement
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_RIGHT]:
@@ -123,9 +129,11 @@ class Player(pygame.sprite.Sprite):
         self.rect.y += self.direction.y
 
     def jump(self):
+        # jump speed
         self.direction.y = self.jump_speed
 
     def update(self):
+        # sends update
         self.get_input()
         self.get_status()
         self.animate()
