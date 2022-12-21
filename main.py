@@ -2,6 +2,7 @@ import sys
 
 import pygame
 
+from game_data import level_0
 from level import Level
 from settings import *
 
@@ -9,8 +10,7 @@ from settings import *
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 clock = pygame.time.Clock()
-# gets the level map
-level = Level(level_map, screen)
+level = Level(level_0, screen)
 
 while True:
     for event in pygame.event.get():
@@ -18,7 +18,7 @@ while True:
             pygame.quit()
             sys.exit()
 
-    screen.fill('black')
+    screen.fill('grey')
     level.run()
 
     pygame.display.update()
