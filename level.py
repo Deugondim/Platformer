@@ -3,7 +3,8 @@ import pygame
 from particles import ParticleEffect
 from player import Player
 from settings import screen_width, tile_size
-from tiles import Tile
+from support import import_csv_layout, import_cut_graphics
+from tiles import Coin, Crate, Palm, StaticTile, Tile
 
 
 class Level:
@@ -65,6 +66,60 @@ class Level:
         level_width = len(terrain_layout[0]) * tile_size
         self.water = Water(screen_height - 20, level_width)
         self.clouds = Clouds(400, level_width, 30)
+
+    def create_tile_group(self, layout, type):
+        sprite_group = pygame.sprite.Group()
+
+        for row_index, row in enumerate(layout):
+            for col_index, val in enumerate(row):
+                if val != '-1':
+                    x = col_index * tile_size
+                    y = row_index * tile_size
+
+                    if type == 'terrain':
+                        terrain_tile_list = import_cut_graphics(
+                            '/graphics/terrain/terrain_tiles.png')
+                        tile_surface = terrain_tile_list[int(val)]
+                        sprite = StaticTile(tile_size, x, y, tile_surface)
+
+                    if type == 'grass':
+                        grass_tile_list = import_cut_graphics(
+                            '/graphics/decoration/grass/grass.png')
+                        tile_surface = grass_tile_list[int(val)]
+                        sprite = StaticTile(tile_size, x, y, tile_surface)
+
+                    if type == 'crates':
+                        sprite = Crate(tile_size, x, y)
+
+                    if type == 'coins':
+                        if val == '0':
+                            sprite = Coin(tile_size, x, y,
+                                          '/graphics/coins/gold')
+                        if val == '1':
+                            sprite = Coin(tile_size, x, y,
+                                          '/graphics/coins/silver')
+
+                    if type == 'fg palms':
+                        if val == '0':
+                            sprite = Palm(tile_size, x, y,
+                                          '/graphics/terrain/palm_small', 38)
+                        if val == '1':
+                            sprite = Palm(tile_size, x, y,
+                                          '/graphics/terrain/palm_large', 64)
+
+                    if type == 'bg palms':
+                        sprite = Palm(tile_size, x, y,
+                                      '/graphics/terrain/palm_bg', 64)
+
+                    if type == 'enemies':
+                        sprite = Enemy(tile_size, x, y)
+
+                    if type == 'constraint':
+                        sprite = Tile(tile_size, x, y)
+
+                    sprite_group.add(sprite)
+
+        return sprite_group
 
     def create_jump_particles(self, pos):
         # particles set up on leveç
