@@ -9,15 +9,62 @@ from tiles import Tile
 class Level:
     def __init__(self, level_data, surface):
 
-        # level setup
+        # general setup
         self.display_surface = surface
-        self.setup_level(level_data)
         self.world_shift = 0
-        self.current_x = 0
+        self.current_x = None
+
+        # player
+        player_layout = import_csv_layout(level_data['player'])
+        self.player = pygame.sprite.GroupSingle()
+        self.goal = pygame.sprite.GroupSingle()
+        self.player_setup(player_layout)
 
         # dust
         self.dust_sprite = pygame.sprite.GroupSingle()
         self.player_on_ground = False
+
+        # terrain setup
+        terrain_layout = import_csv_layout(level_data['terrain'])
+        self.terrain_sprites = self.create_tile_group(
+            terrain_layout, 'terrain')
+
+        # grass setup
+        grass_layout = import_csv_layout(level_data['grass'])
+        self.grass_sprites = self.create_tile_group(grass_layout, 'grass')
+
+        # crates
+        crate_layout = import_csv_layout(level_data['crates'])
+        self.crate_sprites = self.create_tile_group(crate_layout, 'crates')
+
+        # coins
+        coin_layout = import_csv_layout(level_data['coins'])
+        self.coin_sprites = self.create_tile_group(coin_layout, 'coins')
+
+        # foreground palms
+        fg_palm_layout = import_csv_layout(level_data['fg palms'])
+        self.fg_palm_sprites = self.create_tile_group(
+            fg_palm_layout, 'fg palms')
+
+        # background palms
+        bg_palm_layout = import_csv_layout(level_data['bg palms'])
+        self.bg_palm_sprites = self.create_tile_group(
+            bg_palm_layout, 'bg palms')
+
+        # enemy
+        enemy_layout = import_csv_layout(level_data['enemies'])
+        self.enemy_sprites = self.create_tile_group(enemy_layout, 'enemies')
+
+        # constraint
+        constraint_layout = import_csv_layout(level_data['constraints'])
+        self.constraint_sprites = self.create_tile_group(
+            constraint_layout, 'constraint')
+
+        # decoration
+        self.sky = Sky(8)
+        level_width = len(terrain_layout[0]) * tile_size
+        self.water = Water(screen_height - 20, level_width)
+        self.clouds = Clouds(400, level_width, 30)
 
     def create_jump_particles(self, pos):
         # particles set up on leveç
